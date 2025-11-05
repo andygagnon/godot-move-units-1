@@ -40,6 +40,7 @@ func _ready() -> void:
 	InputManager.move_down.connect( _on_move_down)
 	InputManager.move_left.connect( _on_move_left)
 	InputManager.move_right.connect( _on_move_right)
+	InputManager.selected.connect( _on_selected)
 	
 	# Example of accessing a region after initialization:
 	var region_3_5: Region = get_region(3, 5)
@@ -220,17 +221,19 @@ func get_region(x: int, y: int) -> Region:
 
 func _try_move( new_pos: Vector2i):
 	
+	# clamp values to grid edges
 	new_pos.x = clamp(new_pos.x, 0, GRID_SIZE - 1)
 	new_pos.y = clamp(new_pos.y, 0, GRID_SIZE - 1)	
 	
 	if new_pos != current_pos:
+		# update region selection
 		var region: Region
 		region = get_region( current_pos.x, current_pos.y)
-		region.is_selected = false
+		region.is_highlighted = false
 		
 		current_pos = new_pos
 		region = get_region( current_pos.x, current_pos.y)
-		region.is_selected = true
+		region.is_highlighted = true
 
 func _on_move_up():
 	var new_pos: Vector2i
@@ -256,3 +259,9 @@ func _on_move_right():
 	new_pos = current_pos
 	new_pos.x -= 1
 	_try_move( new_pos)	
+
+func _on_selected():
+	# update region selection
+	var region: Region
+	region = get_region( current_pos.x, current_pos.y)
+	region.is_selected = !region.is_selected

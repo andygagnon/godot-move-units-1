@@ -12,6 +12,7 @@ var grid_position: Vector2i = Vector2i.ZERO
 var is_active: bool = false
 var occupied_unit: Unit = null # NEW: Tracks the unit currently on this region
 var is_selected: bool = false
+var is_highlighted: bool = false
 var region_material
 var color_original : Color 
 
@@ -40,7 +41,7 @@ func _init(position: Vector2i = Vector2i.ZERO) -> void:
 	)
 	
 	if self.position.x == 0 && position.y == 0:
-		is_selected = true
+		is_highlighted = true
 		
 	# Set up the visual mesh and collision shape
 	_setup_visuals_and_collision()
@@ -136,11 +137,13 @@ func remove_unit() -> Unit:
 	return unit_to_remove
 
 func _process(delta):
-	if is_selected:
+	if is_highlighted:
 		#var node2 : MeshInstance3D =  get_node("PhysicsRoot").get_node("TileMesh")
 		#var material : StandardMaterial3D = node2.get_active_material(0)
 		#material.albedo_color = Color(0.8 + (0.2 * randf()), 0.8, 0.8)
-		region_material.albedo_color = Color(0.8 + (0.2 * randf()), 0.8, 0.8)
+		region_material.albedo_color = Color(0.8 + (0.0 * randf()), 0.8, 0.8)
+	elif is_selected:
+		region_material.albedo_color = Color(0.4 + (0.0 * randf()), 0.4, 0.4)
 	else:
 		region_material.albedo_color = color_original
 

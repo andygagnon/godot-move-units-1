@@ -5,7 +5,8 @@ extends Node
 # --- Signals for System/Meta Toggles (Prioritizes UI) ---
 # Signals must be emitted using .emit() in Godot 4.x
 signal pause_toggled
-signal inventory_toggled
+signal selected
+signal accepted
 signal move_up
 signal move_down
 signal move_left
@@ -21,9 +22,19 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		# We assume if the UI didn't take it, the user wants a system action.
 		pause_toggled.emit()
-		get_tree().set_input_as_handled() # Consume it so it doesn't propagate further
+		get_viewport().set_input_as_handled()
 		return
-		
+	if event.is_action_pressed("ui_accept"):
+		# We assume if the UI didn't take it, the user wants a system action.
+		accepted.emit()
+		get_viewport().set_input_as_handled()
+		return		
+	if event.is_action_pressed("ui_select"):
+		# We assume if the UI didn't take it, the user wants a system action.
+		selected.emit()
+		get_viewport().set_input_as_handled()
+		return		
+				
 	if event.is_action_pressed("ui_up"):
 		# We assume if the UI didn't take it, the user wants a system action.
 		move_up.emit() 
@@ -43,18 +54,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				
 		
 	if handled:
-		#get_tree().set_input_as_handled() # Consume it so it doesn't propagate further
+		get_viewport().set_input_as_handled()
 		return
 		
-	# B. Inventory/Map Toggle (Example: 'toggle_inventory' is 'I' key)
-	#if event.is_action_pressed("toggle_inventory"):
-		#inventory_toggled.emit()
-		#get_tree().set_input_as_handled()
-		#return
-
+		
 # --- 2. Gameplay Input Access (Called from _process or _physics_process) ---
-
-
 # A. Unified Movement Vector (Combines Digital/Analog Input)
 # This is ideal for CharacterBody movement in 2D or 3D.
 func get_movement_vector() -> Vector2:
