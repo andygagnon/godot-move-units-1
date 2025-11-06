@@ -27,22 +27,22 @@ const LAYER_UNIT: int = 2
 
 
 ## Constructor for the Region.
-func _init(position: Vector2i = Vector2i.ZERO) -> void:
+func _init(init_position: Vector2i = Vector2i.ZERO) -> void:
 	# Set the grid position
-	self.grid_position = position
+	self.grid_position = init_position
 	
 	# Name the node descriptively based on its position for easier debugging in the scene tree.
-	self.name = "Region_%s_%s" % [position.x, position.y]
+	self.name = "Region_%s_%s" % [init_position.x, init_position.y]
 	
 	# Calculate the 3D position for the center of the grid tile.
 	# The Y position is set so the top surface of the tile is exactly at Y=0.
 	self.position = Vector3(
-		float(position.x) * (REGION_SIZE + (REGION_SIZE / 8.0)),
+		float(init_position.x) * (REGION_SIZE + (REGION_SIZE / 8.0)),
 		-TILE_HEIGHT / 2.0, 
-		float(position.y) * (REGION_SIZE + (REGION_SIZE / 8.0))
+		float(init_position.y) * (REGION_SIZE + (REGION_SIZE / 8.0))
 	)
 	
-	if self.position.x == 0 && position.y == 0:
+	if init_position.x == 0 && init_position.y == 0:
 		is_highlighted = true
 		
 	# Set up the visual mesh and collision shape
@@ -144,9 +144,6 @@ func remove_unit() -> Unit:
 
 func _process(delta):
 	if is_highlighted:
-		#var node2 : MeshInstance3D =  get_node("PhysicsRoot").get_node("TileMesh")
-		#var material : StandardMaterial3D = node2.get_active_material(0)
-		#material.albedo_color = Color(0.8 + (0.2 * randf()), 0.8, 0.8)
 		region_material.albedo_color = Color(0.8 + (0.0 * randf()), 0.8, 0.8)
 	elif is_selected:
 		region_material.albedo_color = Color(0.4 + (0.0 * randf()), 0.4, 0.4)

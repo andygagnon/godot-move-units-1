@@ -23,7 +23,7 @@ var region_dictionary: Dictionary = {}
 
 ## NEW: Container node to hold all Region instances for easy manipulation.
 var regions_container: Node3D
-
+var reset_regions: bool = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -210,6 +210,10 @@ func _setup_environment() -> void:
 	add_child(environment_node)
 	print("World environment setup complete.")
 
+func _process(delta):
+	if reset_regions:
+		reset_regions = false
+		unhighlight_regions()
 
 ## Provides safe access to a region using grid coordinates.
 func get_region(x: int, y: int) -> Region:
@@ -293,17 +297,27 @@ func _on_accepted():
 	
 	if unit != null:
 		region.add_unit(unit)
-	
 
 	# turn off selection, clear fields
-	
+	reset_regions = true
 		
 		
 func _is_legal_action( current_region):
-	if current_region.occupied_unit != null && current_region.occupied_unit.name == "Unit_Hero" :
+	if current_region.occupied_unit != null :
+	#if current_region.occupied_unit != null && current_region.occupied_unit.name == "Unit_Hero" :
+		print("\nNot legal action at region %s at grid position %s." % [ current_region.name, current_region.grid_position])
 		return false
 		
 	return true
-	
-	
-	
+
+# remove highlight
+func unhighlight_regions():
+	# clear highlight from all regions
+	for x in range(GRID_SIZE):
+		for z in range(GRID_SIZE):
+			var region_t;
+			region_t = get_region( x, z)
+			region_t.is_selected = false
+			#var pos:Vector2i = Vector2i( x, z)
+			#region_dictionary[pos].is_sel = false
+			print("\nUnhighlight region %s at grid position %s." % [ region_t.name, region_t.grid_position])
