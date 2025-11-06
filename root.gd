@@ -318,6 +318,4 @@ func unhighlight_regions():
 			var region_t;
 			region_t = get_region( x, z)
 			region_t.is_selected = false
-			#var pos:Vector2i = Vector2i( x, z)
-			#region_dictionary[pos].is_sel = false
-			print("\nUnhighlight region %s at grid position %s." % [ region_t.name, region_t.grid_position])
+			#print("\nUnhighlight region %s at grid position %s." % [ region_t.name, region_t.grid_position])
