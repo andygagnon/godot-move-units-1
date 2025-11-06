@@ -24,6 +24,7 @@ var region_dictionary: Dictionary = {}
 ## NEW: Container node to hold all Region instances for easy manipulation.
 var regions_container: Node3D
 var reset_regions: bool = false
+var reset_units: bool = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -214,6 +215,9 @@ func _process(delta):
 	if reset_regions:
 		reset_regions = false
 		unhighlight_regions()
+	if reset_units:
+		reset_units = false
+		unselect_units()
 
 ## Provides safe access to a region using grid coordinates.
 func get_region(x: int, y: int) -> Region:
@@ -271,6 +275,7 @@ func _on_move_right():
 func _on_selected():
 	# update region selection
 	var region: Region
+	unhighlight_regions()
 	region = get_region( current_pos.x, current_pos.y)
 	region.is_selected = !region.is_selected
 	selected_region = region
@@ -278,8 +283,13 @@ func _on_selected():
 	
 	if region.occupied_unit != null:
 		selected_unit = region.occupied_unit
-		print("\n--- unit selected ---")
-		print("Selected unit: %s" % selected_unit.name)
+		if region.is_selected:
+			unselect_units()
+			selected_unit.is_selected = true
+			print("\n--- unit selected ---")
+			print("Selected unit: %s" % selected_unit.name)
+		else:
+			selected_unit.is_selected = false
 
 
 func _on_accepted():
@@ -300,7 +310,9 @@ func _on_accepted():
 
 	# turn off selection, clear fields
 	reset_regions = true
-		
+	reset_units = true
+	if unit != null:
+		unit.is_selected = false		
 		
 func _is_legal_action( current_region):
 	if current_region.occupied_unit != null :
@@ -319,3 +331,13 @@ func unhighlight_regions():
 			region_t = get_region( x, z)
 			region_t.is_selected = false
 			#print("\nUnhighlight region %s at grid position %s." % [ region_t.name, region_t.grid_position])
+
+# remove highlight
+func unselect_units():
+	# clear highlight from all regions
+	for x in range(GRID_SIZE):
+		for z in range(GRID_SIZE):
+			var region_t;
+			region_t = get_region( x, z)
+			if region_t.occupied_unit:
+				region_t.occupied_unit.is_selected = false

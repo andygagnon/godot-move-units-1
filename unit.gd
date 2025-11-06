@@ -12,6 +12,9 @@ var is_turn_active: bool = false
 
 var has_moved: bool = false
 var move_position: Vector3
+var is_selected: bool = false
+var unit_material
+var color_original : Color 
 
 ## The target list of other Unit nodes.
 var target_units: Array[Unit] = [] 
@@ -38,12 +41,12 @@ func _init(name_suffix: String = "") -> void:
 	self.set_collision_layer_value(LAYER_UNIT, true) # Units are on their own layer (for raycasting)
 	self.set_collision_mask_value(LAYER_REGION, true)  # UNITS collide only with the REGION
 
-	_setup_visuals_and_collision()
+	_setup_visuals_and_collision(name_suffix)
 	print("Initialized unit: %s" % self.name)
 
 
 ## Helper function to create the MeshInstance3D and CollisionShape3D.
-func _setup_visuals_and_collision() -> void:
+func _setup_visuals_and_collision(name_suffix: String = "") -> void:
 	# We use StaticBody3D for physics interaction, although CharacterBody3D is 
 	# more common for movable units in a full game.
 	#var static_body := StaticBody3D.new()
@@ -66,10 +69,14 @@ func _setup_visuals_and_collision() -> void:
 	
 	# Create a simple red material for units
 	var standard_material := StandardMaterial3D.new()
-	var gray = randf_range( 0.2, 0.85);
+	var gray = randf_range( 0.25, 0.45)
+	if name_suffix == "Hero":
+		gray = randf_range( 0.65, 0.85)
 	standard_material.albedo_color = Color(gray, gray, gray) 
 	capsule_mesh.material = standard_material
 	prism_mesh.material = standard_material
+	unit_material = standard_material
+	color_original = standard_material.albedo_color
 	
 	mesh_instance.mesh = capsule_mesh
 	#mesh_instance.mesh = prism_mesh
@@ -98,3 +105,12 @@ func _physics_process(delta):
 	if has_moved:
 		global_position = move_position
 		has_moved = false
+		
+func _process(delta):
+	# if selected, change color
+	if is_selected:
+		unit_material.albedo_color = Color( 0.8, .5, .5)
+	else:
+		unit_material.albedo_color = color_original
+		
+	
