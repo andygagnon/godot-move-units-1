@@ -16,6 +16,8 @@ var is_highlighted: bool = false
 var region_material
 var color_original : Color 
 
+
+
 # Constants for the region's physical dimensions.
 const REGION_SIZE: float = 80.0  # Width and depth of the tile
 const TILE_HEIGHT: float = 0.5  # Thickness of the tile
@@ -97,7 +99,6 @@ func _setup_visuals_and_collision() -> void:
 	static_body.add_child(collision_shape)
 	
 func _physics_process(delta):
-	pass
 	rotation.x += (0.0 * delta)
 	
 	
@@ -120,6 +121,11 @@ func add_unit(unit: Unit) -> bool:
 	unit.linear_velocity = Vector3.ZERO
 	
 	unit.grid_position = grid_position
+	
+	# for physics engine
+	unit.has_moved = true
+	unit.move_position = start_pos
+	
 	occupied_unit = unit
 	print("Unit %s added to region %s." % [unit.name, name])
 	return true

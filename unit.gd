@@ -10,6 +10,9 @@ var current_health: int = 100
 var move_range: int = 3 # Represents regions/tiles the unit can move
 var is_turn_active: bool = false
 
+var has_moved: bool = false
+var move_position: Vector3
+
 ## The target list of other Unit nodes.
 var target_units: Array[Unit] = [] 
 
@@ -73,6 +76,7 @@ func _setup_visuals_and_collision() -> void:
 	
 	# Offset the mesh vertically so its base sits at the parent's origin (Y=0).
 	mesh_instance.position = Vector3(0.0, capsule_mesh.height / 2.0, 0.0) 
+	
 	self.add_child(mesh_instance)
 	
 	# --- 3. Collision Shape (The Bounding Capsule) ---
@@ -89,3 +93,8 @@ func _setup_visuals_and_collision() -> void:
 	
 
 	self.add_child(collision_shape)
+
+func _physics_process(delta):
+	if has_moved:
+		global_position = move_position
+		has_moved = false

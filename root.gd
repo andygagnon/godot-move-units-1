@@ -12,6 +12,9 @@ const GRID_WORLD_SIZE: float = float(GRID_SIZE) * 90.0
 var current_pos: Vector2i = Vector2i.ZERO # Tracks (x, y) starting at (0, 0)
 var old_pos: Vector2i = Vector2i.ZERO # Tracks (x, y) starting at (0, 0)
 
+var selected_unit: Unit = null
+var selected_region: Region = null
+
 var is_moving: bool = false # Used for movement debounce/rate limiting
 
 ## The 8x8 dictionary holding all Region instances.
@@ -41,6 +44,7 @@ func _ready() -> void:
 	InputManager.move_left.connect( _on_move_left)
 	InputManager.move_right.connect( _on_move_right)
 	InputManager.selected.connect( _on_selected)
+	InputManager.accepted.connect( _on_accepted)
 	
 	# Example of accessing a region after initialization:
 	var region_3_5: Region = get_region(3, 5)
@@ -265,3 +269,41 @@ func _on_selected():
 	var region: Region
 	region = get_region( current_pos.x, current_pos.y)
 	region.is_selected = !region.is_selected
+	selected_region = region
+	print("\nSelected region %s at grid position %s." % [region.name, region.grid_position])
+	
+	if region.occupied_unit != null:
+		selected_unit = region.occupied_unit
+		print("\n--- unit selected ---")
+		print("Selected unit: %s" % selected_unit.name)
+
+
+func _on_accepted():
+	# test accept move on current region
+	var region: Region
+	region = get_region( current_pos.x, current_pos.y)
+	if !_is_legal_action( region):
+		return
+		
+	print("\nAccepted region %s at grid position %s." % [region.name, region.grid_position])
+	
+	# move the selected unit to this region
+	var unit: Unit
+	unit = selected_region.remove_unit()
+	
+	if unit != null:
+		region.add_unit(unit)
+	
+
+	# turn off selection, clear fields
+	
+		
+		
+func _is_legal_action( current_region):
+	if current_region.occupied_unit != null && current_region.occupied_unit.name == "Unit_Hero" :
+		return false
+		
+	return true
+	
+	
+	
