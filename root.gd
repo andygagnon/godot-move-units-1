@@ -271,25 +271,35 @@ func _on_move_right():
 	new_pos = current_pos
 	new_pos.x -= 1
 	_try_move( new_pos)	
-
+	
+# select a region and unit, is_selected
 func _on_selected():
 	# update region selection
 	var region: Region
-	unhighlight_regions()
 	region = get_region( current_pos.x, current_pos.y)
+	if region.occupied_unit != null && region.occupied_unit.side == "Enemy":
+		return
+		
+	# clear is_selected
+	unhighlight_regions()
+	unselect_units()
 	region.is_selected = !region.is_selected
 	selected_region = region
 	print("\nSelected region %s at grid position %s." % [region.name, region.grid_position])
 	
+	# friendly only
 	if region.occupied_unit != null:
+		unselect_units()
 		selected_unit = region.occupied_unit
 		if region.is_selected:
-			unselect_units()
 			selected_unit.is_selected = true
 			print("\n--- unit selected ---")
 			print("Selected unit: %s" % selected_unit.name)
 		else:
 			selected_unit.is_selected = false
+	else:
+		selected_unit = null
+		
 
 
 func _on_accepted():
@@ -303,7 +313,14 @@ func _on_accepted():
 	
 	# move the selected unit to this region
 	var unit: Unit
-	unit = selected_region.remove_unit()
+	if selected_region != null:
+		unit = selected_region.remove_unit()
+	
+	# remove existing unit, loss, combat resolution
+	var off_unit : Unit = region.occupied_unit
+	if off_unit != null:
+		off_unit = region.remove_unit(true)
+		
 	
 	if unit != null:
 		region.add_unit(unit)
@@ -311,19 +328,25 @@ func _on_accepted():
 	# turn off selection, clear fields
 	reset_regions = true
 	reset_units = true
+	
+	# 
 	if unit != null:
 		unit.is_selected = false		
 		
 func _is_legal_action( current_region):
-	if current_region.occupied_unit != null :
-	#if current_region.occupied_unit != null && current_region.occupied_unit.name == "Unit_Hero" :
+	# do we have a selected region/unit?
+	if selected_region == null || selected_unit == null:
+		return false
+	#if current_region.occupied_unit != null :
+	if current_region.occupied_unit != null && current_region.occupied_unit.side == "Hero" :
 		print("\nNot legal action at region %s at grid position %s." % [ current_region.name, current_region.grid_position])
 		return false
 		
 	return true
 
-# remove highlight
+# remove highlight, region.is_selected = false
 func unhighlight_regions():
+	selected_region = null
 	# clear highlight from all regions
 	for x in range(GRID_SIZE):
 		for z in range(GRID_SIZE):
@@ -332,8 +355,10 @@ func unhighlight_regions():
 			region_t.is_selected = false
 			#print("\nUnhighlight region %s at grid position %s." % [ region_t.name, region_t.grid_position])
 
-# remove highlight
+
+# remove unit highlight, unit.is_selected = false
 func unselect_units():
+	selected_unit = null
 	# clear highlight from all regions
 	for x in range(GRID_SIZE):
 		for z in range(GRID_SIZE):

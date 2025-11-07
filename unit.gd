@@ -4,6 +4,7 @@ class_name Unit extends RigidBody3D
 ## A base class for characters or pieces that occupy a region.
 
 # --- State Variables ---
+var side : String
 var grid_position: Vector2i = Vector2i.ZERO
 var max_health: int = 100
 var current_health: int = 100
@@ -15,6 +16,7 @@ var move_position: Vector3
 var is_selected: bool = false
 var unit_material
 var color_original : Color 
+var is_removed : bool = false
 
 ## The target list of other Unit nodes.
 var target_units: Array[Unit] = [] 
@@ -29,6 +31,7 @@ const LAYER_UNIT: int = 2
 ## Constructor for the Unit.
 func _init(name_suffix: String = "") -> void:
 	self.name = "Unit_%s" % name_suffix
+	self.side = name_suffix
 	# Configure RigidBody3D properties for physics interaction
 	self.mass = 1.0
 	self.gravity_scale = 1.0
@@ -107,8 +110,10 @@ func _physics_process(delta):
 		has_moved = false
 		
 func _process(delta):
+	if is_removed:
+		unit_material.albedo_color = Color(0.1 + (0.0 * randf()), 0.1, 0.9)
 	# if selected, change color
-	if is_selected:
+	elif is_selected:
 		unit_material.albedo_color = Color( 0.8, .5, .5)
 	else:
 		unit_material.albedo_color = color_original

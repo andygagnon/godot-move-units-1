@@ -17,7 +17,6 @@ var region_material
 var color_original : Color 
 
 
-
 # Constants for the region's physical dimensions.
 const REGION_SIZE: float = 80.0  # Width and depth of the tile
 const TILE_HEIGHT: float = 0.5  # Thickness of the tile
@@ -132,13 +131,19 @@ func add_unit(unit: Unit) -> bool:
 
 
 ## NEW: Removes the unit from this region.
-func remove_unit() -> Unit:
-	if !occupied_unit:
+func remove_unit( off_board : bool = false) -> Unit:
+	if occupied_unit == null:
 		return null
 		
 	var unit_to_remove: Unit = occupied_unit
 	occupied_unit = null
 	unit_to_remove.grid_position = Vector2i(-1, -1) # Mark unit as off-grid
+	# change physical position
+	if off_board:
+		# for physics engine
+		unit_to_remove.has_moved = true
+		unit_to_remove.move_position = Vector3( -180.0, 8.0, 180.0)
+		
 	print("Unit %s removed from region %s." % [unit_to_remove.name, name])
 	return unit_to_remove
 
