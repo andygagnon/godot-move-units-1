@@ -104,12 +104,12 @@ func _setup_visuals_and_collision(name_suffix: String = "") -> void:
 
 	self.add_child(collision_shape)
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if has_moved:
 		global_position = move_position
 		has_moved = false
 		
-func _process(delta):
+func _process(_delta):
 	if is_removed:
 		unit_material.albedo_color = Color(0.1 + (0.0 * randf()), 0.1, 0.9)
 	# if selected, change color

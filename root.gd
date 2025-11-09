@@ -211,7 +211,7 @@ func _setup_environment() -> void:
 	add_child(environment_node)
 	print("World environment setup complete.")
 
-func _process(delta):
+func _process(_delta):
 	if reset_regions:
 		reset_regions = false
 		unhighlight_regions()

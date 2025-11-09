@@ -147,7 +147,7 @@ func remove_unit( off_board : bool = false) -> Unit:
 	print("Unit %s removed from region %s." % [unit_to_remove.name, name])
 	return unit_to_remove
 
-func _process(delta):
+func _process(_delta):
 	if is_highlighted:
 		region_material.albedo_color = Color(0.8 + (0.0 * randf()), 0.8, 0.8)
 	elif is_selected:
